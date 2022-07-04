@@ -25,6 +25,12 @@ This plugin stores no private data.
 == Frequently Asked Questions ==
 
 
+== Credits ==
+
+1. Credit to [Jewish Calendar Calculation in PHP](https://www.david-greve.de/luach-code/jewish-php.html). I did not use the code, but I did start with the algorithms here.
+1. Credit to Ari Miller's PHP Extension for [Jewish Dates and Zmanim](https://github.com/zmanim/zman) specifically for providing the Hebrew strings for various items. I considered using the entire library
+but it did not fit exactly what I needed.
+
 == Changelog ==
 
 = Version 1.0 (xxxx-xx-xx) =

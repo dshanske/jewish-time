@@ -19,6 +19,7 @@ add_action( 'init', array( 'Jewish_Time_Plugin', 'init' ) );
 class Jewish_Time_Plugin {
 
 	public static function plugins_loaded() {
+		require_once plugin_dir_path( __FILE__ ) . '/includes/class-hebrew-date.php';
 	}
 
 	public static function init() {
