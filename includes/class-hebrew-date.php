@@ -167,5 +167,91 @@ class JT_Hebrew_Date {
 		);
 		return $months[ $this->month - 1 ];
 	}
+
+	public function get_the_date() {
+		return sprintf( '%1$s %2$s %3$s', $this->day, $this->month_name, $this->year );
+	}
+
+	public function get_the_hebrew_date() {
+		return sprintf( '<span dir="rtl" lang="he">%1$s %2$s %3$s</span>', self::number_to_hebrew( $this->day ), $this->hebrew_month_name, self::number_to_hebrew( $this->year ) );
+	}
+
+	/**
+	 * Split a number into an array of parts which
+	 * corresponds with Hebrew gematria values.
+	 * Borrowed from Zman Library(see credits).
+	 *
+	 * @param  string|int $number
+	 * @return array
+						  */
+	private static function number_to_array( $number ) {
+		$result = array();
+		while ( $number > 0 ) {
+			$incr = 100;
+			if ( $number == 15 || $number == 16 ) {
+				$result[] = 9;
+				$result[] = $number - 9;
+				break;
+			}
+			for ( $i = 400; $i > $number; $i -= $incr ) {
+				if ( $i == $incr ) {
+					  $incr = (int) ( $incr / 10 );
+				}
+			}
+			$result[] = $i;
+			$number  -= $i;
+		}
+		return $result;
+	}
+
+	/**
+	 * Convert a number to Hebrew.
+	 * Borrowed from Zman Library(see credits).
+	 *
+	 * @param  string|int $number
+	 * @return string
+	 */
+	public static function number_to_hebrew( $number ) {
+		$arr     = self::number_to_array( $number );
+		$numbers = array(
+			1   => "\327\220",
+			2   => "\327\221",
+			3   => "\327\222",
+			4   => "\327\223",
+			5   => "\327\224",
+			6   => "\327\225",
+			7   => "\327\226",
+			8   => "\327\227",
+			9   => "\327\230",
+			10  => "\327\231",
+			20  => "\327\233",
+			30  => "\327\234",
+			40  => "\327\236",
+			50  => "\327\240",
+			60  => "\327\241",
+			70  => "\327\242",
+			80  => "\327\244",
+			90  => "\327\246",
+			100 => "\327\247",
+			200 => "\327\250",
+			300 => "\327\251",
+			400 => "\327\252",
+		);
+		$digits  = count( $arr );
+		if ( $digits == 1 ) {
+			 $result = $numbers[ $arr[0] ] . "\327\263"; // geresh
+		} else {
+			$result = '';
+			for ( $i = 0; $i < $digits; $i++ ) {
+				if ( ( $i + 1 ) == $digits ) {
+					$result .= "\327\264"; // gershayim
+				}
+				$result .= $numbers[ $arr[ $i ] ];
+			}
+		}
+		return $result;
+	}
+
+
 }
 
