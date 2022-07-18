@@ -71,20 +71,27 @@ class JT_Hebrew_Date {
 	}
 
 	public function set_hebrew_date( $year, $month, $day ) {
-		$this->year        = (int) $year;
-		$this->month       = (int) $month;
-		$this->day         = (int) $day;
-		$jd                = cal_to_jd( CAL_JEWISH, $year, $month, $day );
-		$this->day_of_week = (int) jddayofweek( $jd ) + 1;
-		$month_names       = cal_info( CAL_JEWISH )['months'];
-		if ( $this->is_leap_year() ) {
-			$month_names[7] = 'Adar';
-		}
-		$month_names             = apply_filters( 'jewish_time_month_names', $month_names );
-		$this->month_name        = $month_names[ $this->month ];
+		$this->year              = (int) $year;
+		$this->month             = (int) $month;
+		$this->day               = (int) $day;
+		$jd                      = cal_to_jd( CAL_JEWISH, $year, $month, $day );
+		$this->day_of_week       = (int) jddayofweek( $jd );
+		$this->month_name        = $this->get_month_name();
 		$this->hebrew_month_name = $this->hebrew_month_name( $this->month );
 		$this->days_in_month     = $this->cal_days_in_month();
 		return true;
+	}
+
+	public function get_month_name( $month = null, $year = null ) {
+		if ( ! $month ) {
+			$month = $this->month;
+		}
+		$month_names = cal_info( CAL_JEWISH )['months'];
+		if ( $this->is_leap_year( $year ) ) {
+			$month_names[7] = 'Adar';
+		}
+		$month_names = apply_filters( 'jewish_time_month_names', $month_names );
+		return $month_names[ $month ];
 	}
 
 	public function set_time( $hour, $minute, $second = 0, $millisecond = 0 ) {
@@ -95,7 +102,7 @@ class JT_Hebrew_Date {
 	}
 
 	public function to_datetime() {
-		$jd        = jewishtojd( $this->year, $this->month, $this->day );
+		$jd        = jewishtojd( $this->month, $this->day, $this->year );
 		$timestamp = jdtounix( $jd );
 		$datetime  = new DateTime();
 		$datetime->setTimeZone( $this->timezone );
@@ -116,7 +123,7 @@ class JT_Hebrew_Date {
 		$this->hour        = (int) $datetime->format( 'G' );
 		$this->minute      = (int) $datetime->format( 'i' );
 		$this->second      = (int) $datetime->format( 's' );
-		$this->day_of_week = (int) $datetime->format( 'w' ) + 1;
+		$this->day_of_week = (int) $cal['dow'];
 		$this->millisecond = (int) $datetime->format( 'u' );
 		$this->timezone    = $datetime->getTimezone();
 		return true;
@@ -131,8 +138,11 @@ class JT_Hebrew_Date {
 	*
 	* @return boolean
 	*/
-	public function is_leap_year() {
-		return ( 1 + ( $this->year * 7 ) ) % 19 < 7 ? true : false;
+	public function is_leap_year( $year = null ) {
+		if ( ! $year ) {
+			$year = $this->year;
+		}
+		return ( 1 + ( $year * 7 ) ) % 19 < 7 ? true : false;
 	}
 
 	/*
@@ -168,8 +178,114 @@ class JT_Hebrew_Date {
 		return $months[ $this->month - 1 ];
 	}
 
-	public function get_the_date() {
-		return sprintf( '%1$s %2$s %3$s', $this->day, $this->month_name, $this->year );
+	/**
+	 *
+	 * @return string
+	 */
+	private function hebrew_day_of_week() {
+		$days = array(
+			'יום ראשון',
+			'יום שני',
+			'יום שלישי',
+			'יום רבעי',
+			'יום חמישי',
+			'יום ששי',
+			'יום השׁביעי',
+		);
+		return $days[ $this->day_of_week ];
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
+	private function hebrew_day_of_week_abbr() {
+		$days = array(
+			'יום א׳',
+			'יום ב׳',
+			'יום ג׳',
+			'יום ד׳',
+			'יום ה׳',
+			'יום ו׳',
+			'יום ש׳',
+		);
+		return $days[ $this->day_of_week ];
+	}
+
+	/**
+	 *
+	 * @return string
+	 */
+	private function day_of_week() {
+		$days = array(
+			'Yom Rishon',
+			'Yom Sheni',
+			'Yom Shlishi',
+			"Yom Revi'i",
+			'Yom Chamishi',
+			'Yom Shishi',
+			"Yom Shevi'i",
+		);
+		return $days[ $this->day_of_week ];
+	}
+
+	public function get_the_date( $format = 'j F Y' ) {
+		$datetime      = $this->to_datetime();
+		$format_length = strlen( $format );
+		$output        = '';
+		for ( $i = 0; $i < $format_length; $i ++ ) {
+			switch ( $format[ $i ] ) {
+				// A full numeric representation of a year, at least 4 digits
+				case 'Y':
+					$output .= $this->year;
+					break;
+				// A full textual representation of a month, such as January or March
+				case 'F':
+					$output .= $this->month_name;
+					break;
+				// Numeric representation of a month, with leading zeros
+				case 'm':
+					$output .= str_pad( $this->month, 2, '0', STR_PAD_LEFT );
+					break;
+				// Numeric representation of a month, without leading zeros
+				case 'n':
+					$output .= $this->month;
+					break;
+				// A short textual representation of a month, three letters
+				case 'M':
+					$output .= $this->month_name;
+					break;
+				// Number of days in the given month
+				case 't':
+					$output .= $this->days_in_month;
+					break;
+				// Whether it's a leap year.
+				case 'L':
+					$output .= $this->is_leap_year() ? 1 : 0;
+					break;
+
+				// Day of the month, 2 digits with leading zeros
+				case 'd':
+					$output .= str_pad( $this->day, 2, '0', STR_PAD_LEFT );
+					break;
+				// A textual representation of a day, three letters
+				case 'D':
+					$output .= $this->hebrew_day_of_week_abbr();
+					break;
+				// A full textual representation of a day
+				case 'l':
+					$output .= $this->day_of_week();
+					break;
+				// Day of the month without leading zeros
+				case 'j':
+					$output .= $this->day;
+					break;
+				default:
+					$output .= $datetime->format( $format[ $i ] );
+					break;
+			}
+		}
+		return $output;
 	}
 
 	public function get_the_hebrew_date() {
@@ -188,13 +304,13 @@ class JT_Hebrew_Date {
 		$result = array();
 		while ( $number > 0 ) {
 			$incr = 100;
-			if ( $number == 15 || $number == 16 ) {
+			if ( 15 === $number || 16 === $number ) {
 				$result[] = 9;
 				$result[] = $number - 9;
 				break;
 			}
 			for ( $i = 400; $i > $number; $i -= $incr ) {
-				if ( $i == $incr ) {
+				if ( $i === $incr ) {
 					  $incr = (int) ( $incr / 10 );
 				}
 			}
@@ -238,12 +354,12 @@ class JT_Hebrew_Date {
 			400 => "\327\252",
 		);
 		$digits  = count( $arr );
-		if ( $digits == 1 ) {
+		if ( 1 === $digits ) {
 			 $result = $numbers[ $arr[0] ] . "\327\263"; // geresh
 		} else {
 			$result = '';
 			for ( $i = 0; $i < $digits; $i++ ) {
-				if ( ( $i + 1 ) == $digits ) {
+				if ( ( $i + 1 ) === $digits ) {
 					$result .= "\327\264"; // gershayim
 				}
 				$result .= $numbers[ $arr[ $i ] ];
