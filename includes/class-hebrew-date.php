@@ -86,7 +86,7 @@ class JT_Hebrew_Date {
 		if ( ! $month ) {
 			$month = $this->month;
 		}
-		if ( ! $year  ) {
+		if ( ! $year ) {
 			$year = $this->year;
 		}
 
@@ -164,7 +164,13 @@ class JT_Hebrew_Date {
 	 *
 	 * @return string
 	 */
-	private function hebrew_month_name() {
+	public function hebrew_month_name( $month = null, $year = null ) {
+		if ( ! $month ) {
+			$month = $this->month;
+		}
+		if ( ! $year ) {
+			$year = $this->year;
+		}
 		$months = array(
 			'תשרי',
 			'חשון',
@@ -172,7 +178,7 @@ class JT_Hebrew_Date {
 			'טבת',
 			'שבט',
 			'אדר א',
-			$this->is_leap_year() ? 'אדר ב' : 'אדר',
+			$this->is_leap_year( $year ) ? 'אדר ב' : 'אדר',
 			'ניסן',
 			'אייר',
 			'סיון',
@@ -180,14 +186,17 @@ class JT_Hebrew_Date {
 			'אב',
 			'אלול',
 		);
-		return $months[ $this->month - 1 ];
+		return $months[ $month ];
 	}
 
 	/**
 	 *
 	 * @return string
 	 */
-	private function hebrew_day_of_week() {
+	public function hebrew_day_of_week( $day_of_week = null ) {
+		if ( ! $day_of_week ) {
+			$day_of_week = $this->day_of_week;
+		}
 		$days = array(
 			'יום ראשון',
 			'יום שני',
@@ -197,14 +206,17 @@ class JT_Hebrew_Date {
 			'יום ששי',
 			'יום השׁביעי',
 		);
-		return $days[ $this->day_of_week ];
+		return $days[ $day_of_week ];
 	}
 
 	/**
 	 *
 	 * @return string
 	 */
-	private function hebrew_day_of_week_abbr() {
+	public function hebrew_day_of_week_abbr( $day_of_week = null ) {
+		if ( ! $day_of_week ) {
+			$day_of_week = $this->day_of_week;
+		}
 		$days = array(
 			'יום א׳',
 			'יום ב׳',
@@ -214,14 +226,17 @@ class JT_Hebrew_Date {
 			'יום ו׳',
 			'יום ש׳',
 		);
-		return $days[ $this->day_of_week ];
+		return $days[ $day_of_week ];
 	}
 
 	/**
 	 *
 	 * @return string
 	 */
-	private function day_of_week() {
+	public function day_of_week( $day_of_week = null ) {
+		if ( ! $day_of_week ) {
+			$day_of_week = $this->day_of_week;
+		}
 		$days = array(
 			'Yom Rishon',
 			'Yom Sheni',
@@ -231,7 +246,7 @@ class JT_Hebrew_Date {
 			'Yom Shishi',
 			"Yom Shevi'i",
 		);
-		return $days[ $this->day_of_week ];
+		return $days[ $day_of_week ];
 	}
 
 	public function get_the_date( $format = 'j F Y' ) {

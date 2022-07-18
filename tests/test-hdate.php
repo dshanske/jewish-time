@@ -28,6 +28,11 @@ class HebrewDateTest extends WP_UnitTestCase {
 		$this->assertEquals( 'Nisan', $hdate->get_month_name() );
 	}
 
+	public function test_get_the_day_of_the_week() {
+		$hdate = new JT_Hebrew_Date( new DateTime( 'April 2, 2017' ) );
+		$this->assertEquals( 'Yom Rishon', $hdate->day_of_week() );
+	}
+
 	public function test_if_the_date_is_part_of_a_leap_year() {
 		$hdate = new JT_Hebrew_Date( new DateTime( '2017-01-01' ) );
 		$this->assertFalse( $hdate->is_leap_year() );
