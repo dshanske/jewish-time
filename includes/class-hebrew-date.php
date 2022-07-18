@@ -186,7 +186,7 @@ class JT_Hebrew_Date {
 			'אב',
 			'אלול',
 		);
-		return $months[ $month ];
+		return $months[ $month - 1 ];
 	}
 
 	/**
