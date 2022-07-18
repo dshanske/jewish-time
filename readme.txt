@@ -14,6 +14,9 @@ A Collection of Enhancements to for Hebrew/Jewish Date and Time Handling
 
 There are other date and time themed plugins for WordPress that handle the Hebrew calendar. But they vary in function and focus.
 
+1. Offers a conversion class to handle to/from Hebrew dating, including functionality to generate output based on standard date formatting strings.
+2. Introduce the ?jthdate=1 query variable which changes the display to Hebrew Dates and allows for year date and month to be Hebrew dating.
+
 == Installation ==
 
 Install and activate.
@@ -28,7 +31,7 @@ This plugin stores no private data.
 == Credits ==
 
 1. Credit to [Jewish Calendar Calculation in PHP](https://www.david-greve.de/luach-code/jewish-php.html). I did not use the code, but I did start with the algorithms here.
-1. Credit to Ari Miller's PHP Extension for [Jewish Dates and Zmanim](https://github.com/zmanim/zman) specifically for providing the Hebrew strings for various items. I considered using the entire library
+1. Credit to Ari Miller's PHP Extension for [Jewish Dates and Zmanim](https://github.com/zmanim/zman) specifically for providing the Hebrew strings for various items and some unit test ideas. I considered using the entire library
 but it did not fit exactly what I needed.
 
 == Changelog ==
