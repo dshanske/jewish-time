@@ -7,53 +7,53 @@ class JT_Hebrew_Date {
 
 	/* Hebrew Year.
 	 */
-	protected $year;
+	public $year;
 
 	/* Hebrew Month.
 	 */
-	protected $month;
+	public $month;
 
 	/* Hebrew Month Name in English.
 	 */
-	protected $month_name;
+	public $month_name;
 
 	/* Hebrew Month Name.
 	 */
-	protected $hebrew_month_name;
+	public $hebrew_month_name;
 
 	/* Hebrew Day.
 	 */
-	protected $day;
+	public $day;
 
 	/* Day of Week.
 	 */
-	protected $day_of_week;
+	public $day_of_week;
 
 
 	/* Days in Month.
 	 */
-	protected $days_in_month;
+	public $days_in_month;
 
 	/* Hours.
 	 */
-	protected $hour = 0;
+	public $hour = 0;
 
 	/* Minutes.
 	 */
-	protected $minute = 0;
+	public $minute = 0;
 
 	/* Seconds.
 	 */
-	protected $second = 0;
+	public $second = 0;
 
 	/* Milliseconds.
 	 */
-	protected $millisecond = 0;
+	public $millisecond = 0;
 
 	/* Timezone.
 	 *
 	 */
-	protected $timezone;
+	public $timezone;
 
 	/*
 	 * Constructor.
@@ -86,8 +86,12 @@ class JT_Hebrew_Date {
 		if ( ! $month ) {
 			$month = $this->month;
 		}
+		if ( ! $year  ) {
+			$year = $this->year;
+		}
+
 		$month_names = cal_info( CAL_JEWISH )['months'];
-		if ( $this->is_leap_year( $year ) ) {
+		if ( ! $this->is_leap_year( $year ) ) {
 			$month_names[7] = 'Adar';
 		}
 		$month_names = apply_filters( 'jewish_time_month_names', $month_names );
@@ -129,10 +133,6 @@ class JT_Hebrew_Date {
 		return true;
 	}
 
-	public function toArray() {
-		return get_object_vars( $this );
-	}
-
 	/*
 	* Returns whether the year is a leap year
 	*
@@ -142,7 +142,12 @@ class JT_Hebrew_Date {
 		if ( ! $year ) {
 			$year = $this->year;
 		}
-		return ( 1 + ( $year * 7 ) ) % 19 < 7 ? true : false;
+		if ( 0 === ( $year % 19 ) || 3 === ( $year % 19 ) || 6 === ( $year % 19 ) ||
+			   8 === ( $year % 19 ) || 11 === ( $year % 19 ) || 14 === ( $year % 19 ) ||
+					 17 === ( $year % 19 ) ) {
+					return true;
+		}
+		return false;
 	}
 
 	/*
