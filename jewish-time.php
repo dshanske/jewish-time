@@ -20,10 +20,14 @@ class Jewish_Time_Plugin {
 
 	public static function plugins_loaded() {
 		require_once plugin_dir_path( __FILE__ ) . '/includes/class-hebrew-date.php';
+		require_once plugin_dir_path( __FILE__ ) . '/includes/class-hebrew-date-permalinks.php';
+		new JT_Hebrew_Date_Permalinks();
+		// JT_Hebrew_Date_Permalinks::rewrite_rules();
 	}
 
 	public static function init() {
 	}
+
 
 	public static function upgrader_process_complete( $upgrade_object, $options ) {
 		$current_plugin_path_name = plugin_basename( __FILE__ );
@@ -44,5 +48,3 @@ class Jewish_Time_Plugin {
 		flush_rewrite_rules();
 	}
 }
-
-
